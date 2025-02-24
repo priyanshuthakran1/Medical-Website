@@ -1,0 +1,120 @@
+/* General Styling */
+:root {
+    --primary-color: #4CAF50;
+    --text-color: #000000;
+}
+
+.header {
+    position: relative;
+    padding: 0 2rem;
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    width: 100%;
+}
+
+.logo a {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.links {
+    display: flex;
+    gap: 20px;
+}
+
+/* Navigation Links */
+.links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    position: relative;
+}
+
+/* Smooth Hover Underline */
+.links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary-color);
+    transform: scaleX(0);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Zoom Effect */
+.links a:hover {
+    transform: scale(1.1);
+}
+
+.links a:hover::after {
+    transform: scaleX(1);
+}
+
+/* Authentication (Login & Sign Up) */
+.auth {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-color);
+}
+
+.login, .signup {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.login {
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    background-color: transparent;
+}
+
+.login:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.signup {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.signup:hover {
+    scale: 1.05;
+}
+
+.signup:active {
+    scale: 1;
+}
+
+/* Responsive Menu Button */
+.menuBtn {
+    display: none;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .links, .auth {
+        display: none;
+    }
+    .menuBtn {
+        display: block;
+    }
+}

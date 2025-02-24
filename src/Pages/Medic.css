@@ -1,0 +1,76 @@
+.medic-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    background-color: rgba(246, 214, 163, 0.9); /* Slightly brighter */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1), 0px 0px 15px rgba(132, 132, 132, 0.6); /* Soft shadow + red glow */
+    transform: translateY(-5px); /* Lifts the section slightly */
+    border: 2px solid rgba(115, 115, 115, 0.6); /* Red border */
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+  }
+  
+  .medic-input {
+    width: 95%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s ease-in-out;
+  }
+  
+  .medic-input:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.2);
+  }
+  
+  .medic-btn {
+    background-color: #007bff;
+    color: white;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    margin-top: 10px;
+  }
+  
+  .medic-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .recommendations {
+    margin-top: 20px;
+    text-align: left;
+  }
+  
+  .recommendations h3 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .recommendations ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .recommendations li {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 5px;
+    color: #2c3e50;
+    font-size: 1rem;
+  }
+  
