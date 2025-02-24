@@ -74,8 +74,8 @@ This project is licensed under the MIT License.
 ## Contact
 For any queries, feel free to reach out:
 - **Name:** Priyanshu
-- **Email:** your-email@example.com
-- **GitHub:** [yourgithub](https://github.com/yourusername)
+- **Email:** your-priyanshuthakran@gmail.com
+
 - ![Screenshot (803)](https://github.com/user-attachments/assets/715b5fe5-c21b-43f8-9c3e-6cb925ca0959)
 - ![Screenshot (804)](https://github.com/user-attachments/assets/7db32cd8-6b10-4d7e-ae9b-2250d98e355e)
 - ![Screenshot (805)](https://github.com/user-attachments/assets/612a3f34-af60-4293-9815-49656c6b5aa8)
