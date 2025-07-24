@@ -1,83 +1,248 @@
-import React, { useState } from "react";
-import "./Medic.css"; // Import CSS
+"use client"
 
-const medicineData = {
-  fever: [
-    { name: "Paracetamol", sideEffect: "Liver damage (if overdosed)", usage: "Take with water after food" },
-    { name: "Ibuprofen", sideEffect: "Stomach irritation", usage: "Take after meals with water" },
-    { name: "Aspirin", sideEffect: "Gastric bleeding (long-term use)", usage: "Take with food to reduce irritation" },
-  ],
-  cold: [
-    { name: "Cetirizine", sideEffect: "Drowsiness", usage: "Take once before bedtime" },
-    { name: "Dextromethorphan", sideEffect: "Dizziness", usage: "Take every 6 hours as needed" },
-    { name: "Phenylephrine", sideEffect: "Increased blood pressure", usage: "Avoid if you have hypertension" },
-  ],
-  headache: [
-    { name: "Acetaminophen", sideEffect: "Liver damage (high doses)", usage: "Take 500mg every 6 hours" },
-    { name: "Naproxen", sideEffect: "Stomach ulcer (long-term use)", usage: "Take with food" },
-    { name: "Ibuprofen", sideEffect: "Kidney problems (excess use)", usage: "Take after meals" },
-  ],
-  diabetes: [
-    { name: "Metformin", sideEffect: "Nausea, diarrhea", usage: "Take with meals" },
-    { name: "Insulin", sideEffect: "Low blood sugar", usage: "Inject before meals" },
-    { name: "Glipizide", sideEffect: "Weight gain", usage: "Take 30 minutes before breakfast" },
-  ],
-  hypertension: [
-    { name: "Amlodipine", sideEffect: "Swelling in feet", usage: "Take once daily" },
-    { name: "Lisinopril", sideEffect: "Dry cough", usage: "Take on an empty stomach" },
-    { name: "Losartan", sideEffect: "Dizziness", usage: "Take at the same time daily" },
-  ],
-  asthma: [
-    { name: "Salbutamol", sideEffect: "Increased heart rate", usage: "Inhale as needed" },
-    { name: "Budesonide", sideEffect: "Throat irritation", usage: "Use inhaler with a spacer" },
-    { name: "Montelukast", sideEffect: "Mood changes", usage: "Take at bedtime" },
-  ],
-  anxiety: [
-    { name: "Diazepam", sideEffect: "Drowsiness, addiction risk", usage: "Take as prescribed" },
-    { name: "Fluoxetine", sideEffect: "Insomnia, nausea", usage: "Take in the morning" },
-    { name: "Sertraline", sideEffect: "Dizziness", usage: "Take with food" },
-  ],
-};
+import { useState, useEffect } from "react"
+import "./Medic.css"
 
 const Medic = () => {
-  const [disease, setDisease] = useState("");
-  const [medicines, setMedicines] = useState([]);
+  const [disease, setDisease] = useState("")
+  const [medicines, setMedicines] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [searchHistory, setSearchHistory] = useState([])
+  const [showHistory, setShowHistory] = useState(false)
+  const [error, setError] = useState("")
 
-  const handleRecommend = () => {
-    const recommendations = medicineData[disease.toLowerCase()];
-    setMedicines(recommendations || [{ name: "No recommendation found.", sideEffect: "", usage: "" }]);
-  };
+  // Load search history from localStorage on component mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem("medicSearchHistory")
+    if (savedHistory) {
+      setSearchHistory(JSON.parse(savedHistory))
+    }
+  }, [])
+
+  // Save search to history
+  const saveToHistory = (searchTerm) => {
+    const newHistory = [searchTerm, ...searchHistory.filter((item) => item !== searchTerm)].slice(0, 5)
+    setSearchHistory(newHistory)
+    localStorage.setItem("medicSearchHistory", JSON.stringify(newHistory))
+  }
+
+  const handleRecommend = async () => {
+    if (!disease.trim()) {
+      setError("Please enter a disease name")
+      return
+    }
+
+    setLoading(true)
+    setError("")
+    setMedicines([])
+
+    try {
+      const res = await fetch(
+        `https://api.fda.gov/drug/label.json?search=indications_and_usage:${encodeURIComponent(disease)}&limit=5`,
+      )
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch data from FDA API")
+      }
+
+      const data = await res.json()
+
+      if (!data.results || data.results.length === 0) {
+        throw new Error("No medicine found for this condition")
+      }
+
+      const formatted = data.results.map((item, index) => {
+        const brand = item.openfda?.brand_name?.[0]
+        const generic = item.openfda?.generic_name?.[0]
+        const usage = item.indications_and_usage?.[0]
+        const warning = item.warnings?.[0]
+        const dosage = item.dosage_and_administration?.[0]
+        const manufacturer = item.openfda?.manufacturer_name?.[0]
+
+        return {
+          id: index,
+          name: brand || generic || "Name not found",
+          usage: usage ? usage.split("\n")[0].substring(0, 200) + "..." : "Usage info not available",
+          sideEffect: warning ? warning.split("\n")[0].substring(0, 150) + "..." : "No warning provided",
+          dosage: dosage ? dosage.split("\n")[0].substring(0, 100) + "..." : "Dosage info not available",
+          manufacturer: manufacturer || "Manufacturer not specified",
+          type: brand ? "Brand" : "Generic",
+        }
+      })
+
+      setMedicines(formatted)
+      saveToHistory(disease.trim())
+    } catch (error) {
+      console.error("API fetch error:", error)
+      setError(error.message)
+      setMedicines([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleRecommend()
+    }
+  }
+
+  const selectFromHistory = (historyItem) => {
+    setDisease(historyItem)
+    setShowHistory(false)
+  }
+
+  const clearHistory = () => {
+    setSearchHistory([])
+    localStorage.removeItem("medicSearchHistory")
+    setShowHistory(false)
+  }
 
   return (
-    <div className="medic-container">
-      <h2>Medicine Recommender</h2>
-      <input
-        type="text"
-        placeholder="Enter Disease Name"
-        value={disease}
-        onChange={(e) => setDisease(e.target.value)}
-        className="medic-input"
-      />
-      <button onClick={handleRecommend} className="medic-btn">
-        Get Recommendation
-      </button>
-
-      {medicines.length > 0 && (
-        <div className="recommendations">
-          <h3>Recommended Medicines:</h3>
-          <ul>
-            {medicines.map((medicine, index) => (
-              <li key={index}>
-                <strong>{medicine.name}</strong> <br />
-                <em>Side Effect:</em> {medicine.sideEffect} <br />
-                <em>How to Consume:</em> {medicine.usage}
-              </li>
-            ))}
-          </ul>
+    <div className="medic-page">
+      <div className="medic-container">
+        <div className="medic-header">
+          <div className="header-icon">💊</div>
+          <h2>Medicine Recommender</h2>
+          <p className="header-subtitle">Get FDA-approved medicine recommendations for your condition</p>
         </div>
-      )}
-    </div>
-  );
-};
 
-export default Medic;
+        <div className="search-section">
+          <div className="input-container">
+            <input
+              type="text"
+              placeholder="Enter disease or condition name..."
+              value={disease}
+              onChange={(e) => setDisease(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="medic-input"
+              disabled={loading}
+            />
+            {searchHistory.length > 0 && (
+              <button className="history-btn" onClick={() => setShowHistory(!showHistory)} title="Search History">
+                🕒
+              </button>
+            )}
+          </div>
+
+          {showHistory && searchHistory.length > 0 && (
+            <div className="search-history">
+              <div className="history-header">
+                <span>Recent Searches</span>
+                <button onClick={clearHistory} className="clear-history">
+                  Clear
+                </button>
+              </div>
+              {searchHistory.map((item, index) => (
+                <div key={index} className="history-item" onClick={() => selectFromHistory(item)}>
+                  {item}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <button
+            onClick={handleRecommend}
+            className={`medic-btn ${loading ? "loading" : ""}`}
+            disabled={loading || !disease.trim()}
+          >
+            {loading ? (
+              <>
+                <span className="spinner"></span>
+                Searching...
+              </>
+            ) : (
+              <>
+                <span className="search-icon">🔍</span>
+                Get Recommendations
+              </>
+            )}
+          </button>
+        </div>
+
+        {error && (
+          <div className="error-message">
+            <span className="error-icon">⚠️</span>
+            {error}
+          </div>
+        )}
+
+        {medicines.length > 0 && (
+          <div className="recommendations">
+            <div className="recommendations-header">
+              <h3>💊 Recommended Medicines</h3>
+              <span className="results-count">{medicines.length} results found</span>
+            </div>
+
+            <div className="medicines-grid">
+              {medicines.map((medicine) => (
+                <div key={medicine.id} className="medicine-card">
+                  <div className="medicine-header">
+                    <div className="medicine-name">
+                      <strong>{medicine.name}</strong>
+                      <span className={`medicine-type ${medicine.type.toLowerCase()}`}>{medicine.type}</span>
+                    </div>
+                    {medicine.manufacturer !== "Manufacturer not specified" && (
+                      <div className="manufacturer">by {medicine.manufacturer}</div>
+                    )}
+                  </div>
+
+                  <div className="medicine-details">
+                    <div className="detail-section">
+                      <div className="detail-label">
+                        <span className="detail-icon">📋</span>
+                        Usage & Indications
+                      </div>
+                      <div className="detail-content">{medicine.usage}</div>
+                    </div>
+
+                    {medicine.dosage !== "Dosage info not available" && (
+                      <div className="detail-section">
+                        <div className="detail-label">
+                          <span className="detail-icon">💉</span>
+                          Dosage Information
+                        </div>
+                        <div className="detail-content">{medicine.dosage}</div>
+                      </div>
+                    )}
+
+                    <div className="detail-section warning">
+                      <div className="detail-label">
+                        <span className="detail-icon">⚠️</span>
+                        Warnings & Side Effects
+                      </div>
+                      <div className="detail-content">{medicine.sideEffect}</div>
+                    </div>
+                  </div>
+
+                  <div className="medicine-footer">
+                    <div className="disclaimer">
+                      ⚕️ Always consult with a healthcare professional before taking any medication
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="recommendations-footer">
+              <div className="fda-notice">
+                <span className="fda-icon">🏛️</span>
+                Data sourced from FDA Drug Labels Database
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!loading && medicines.length === 0 && disease && !error && (
+          <div className="no-results">
+            <div className="no-results-icon">🔍</div>
+            <h3>No Results Found</h3>
+            <p>Try searching with different terms or check the spelling</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default Medic
