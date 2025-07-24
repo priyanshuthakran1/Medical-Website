@@ -67,4 +67,49 @@
   .start-btn:hover {
     background-color: #0056b3;
   }
-  
+  .ai-card {
+  margin: 30px auto;
+  padding: 25px;
+  background: linear-gradient(135deg, #f1f8ff, #dbeeff);
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 119, 204, 0.15);
+  max-width: 600px;
+  text-align: center;
+  position: relative;
+  transition: all 0.4s ease-in-out;
+  transform: translateY(0);
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.ai-card:hover {
+  background: linear-gradient(135deg, #e3f2ff, #b3e5fc);
+  box-shadow: 0 12px 24px rgba(0, 119, 204, 0.3);
+  transform: translateY(-8px) scale(1.02);
+  border: 1px solid #0077cc;
+}
+
+.ai-title {
+  font-size: 24px;
+  color: #0077cc;
+  margin-bottom: 12px;
+}
+
+.ai-description {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.ai-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0077cc;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.ai-button:hover {
+  background-color: #005fa3;
+}
