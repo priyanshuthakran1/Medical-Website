@@ -6,7 +6,7 @@ import "./Home.css"; // Import CSS for styling
 const Home = () => (
   <div className="home-container">
     <div className="hero-section">
-      <h1 className="medic-h">Welcome to Medic Page</h1>
+      <h1 className="medic-h">Welcome to my meddic Page</h1>
       
       <p className="php">
         Your trusted health companion for medical recommendations.
