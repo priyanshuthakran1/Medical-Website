@@ -78,7 +78,7 @@ const Home = () => {
           </div>
 
           <h1 className="medic-h">
-            Welcome to <span className="highlight">Medic Page</span>
+            Welcome to <span className="highlight">Medical page</span>
           </h1>
 
           <p className="hero-subtitle">
